@@ -1,0 +1,20 @@
+@startuml
+class Person {
+  - _lastName : String
+  - _firstName : String
+  - _patronymic : String?
+  - _phone : String?
+  - _telegram : String?
+  - _email : String?
+  - _github : String?
+  + id : Int
+  + lastName : String
+  + firstName : String
+  + patronymic : String?
+  + phone : String?
+  + telegram : String?
+  + email : String?
+  + github : String?
+  + displayInfo() : Unit
+}
+@enduml
