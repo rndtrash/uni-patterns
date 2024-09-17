@@ -6,6 +6,34 @@ class Student {
         private val emailRegex = Regex("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}\$")
         private val githubRegex = Regex("^(https?://)?(www\\.)?github\\.com/[A-Za-z0-9_-]+/?\$")
 
+        private val stringRegex = Regex("^\"(.*)\"\$")
+        private val pairRegex = Regex("^([A-Za-z]+):[ \t]*(.+)\$")
+        private val studentStringRegex = Regex("^Student\\((.+)\\)$")
+
+        fun fromString(s: String): Student {
+            val studentR = studentStringRegex.matchEntire(s) ?: throw Exception("Неправильный формат строки Student")
+            val params = studentR.groupValues[1].split(";")
+            val map = mutableMapOf<String, String?>()
+            for (param in params) {
+                val pair = deserializePair(param)
+                map[pair.first] = pair.second
+            }
+
+            return Student(map)
+        }
+
+        private fun deserializeString(s: String): String? {
+            if (s == "null") return null
+
+            val sr = stringRegex.matchEntire(s) ?: throw Exception("Неправильный формат строки")
+            return sr.groupValues[1]
+        }
+
+        private fun deserializePair(s: String): Pair<String, String?> {
+            val pr = pairRegex.matchEntire(s) ?: throw Exception("Неправильный формат пары")
+            return pr.groupValues[1] to deserializeString(pr.groupValues[2])
+        }
+
         private fun validateName(name: String) {
             if (!nameRegex.matches(name)) throw Exception("Неправильное имя")
         }
@@ -28,6 +56,10 @@ class Student {
 
         private fun validateGitHub(github: String?) {
             if (github != null && !githubRegex.matches(github)) throw Exception("Неправильный адрес GitHub")
+        }
+
+        private fun serializeString(s: String?): String {
+            return if (s == null) "null" else "\"$s\""
         }
     }
 
@@ -104,7 +136,7 @@ class Student {
     }
 
     constructor(params: Map<String, Any?>) : this(
-        params["id"] as Int,
+        params["id"] as? Int ?: (params["id"] as String).toInt(),
         params["lastName"] as String,
         params["firstName"] as String,
         params["patronymic"] as? String,
@@ -128,4 +160,15 @@ class Student {
         """.trimIndent()
         )
     }
+
+    override fun toString(): String =
+        "Student(id:\"$id\";lastName:${serializeString(lastName)};firstName:${serializeString(firstName)};patronymic:${
+            serializeString(
+                patronymic
+            )
+        };phone:${
+            serializeString(
+                phone
+            )
+        };telegram:${serializeString(telegram)};email:${serializeString(email)};github:${serializeString(github)})"
 }

@@ -12,6 +12,10 @@ fun main() {
             "github" to "https://github.com/rndtrash"
         )
     )
+    println(student1)
+
+    val student1_fromString = Student.fromString(student1.toString())
+    println(student1_fromString)
 
     val student2 = Student(
         mapOf(
@@ -22,12 +26,14 @@ fun main() {
             "telegram" to "@pivnoi"
         )
     )
+    println(student2)
 
     val student3 = Student(
         mapOf(
             "id" to 3, "lastName" to "Сидоров", "firstName" to "Пётр", "patronymic" to "Олегович"
         )
     )
+    println(student3)
 
     student1.displayInfo()
     student2.displayInfo()
