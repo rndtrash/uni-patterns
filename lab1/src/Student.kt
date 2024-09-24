@@ -1,25 +1,13 @@
-class Student {
+import java.io.File
+
+class Student : BaseStudent {
     companion object {
-        private val nameRegex = Regex("^[А-Яа-яЁёA-Za-z-]+$")
-        private val phoneRegex = Regex("^\\+?[0-9]{10,15}\$")
-        private val telegramRegex = Regex("^@[A-Za-z0-9_]{5,32}\$")
-        private val emailRegex = Regex("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}\$")
-        private val githubRegex = Regex("^(https?://)?(www\\.)?github\\.com/[A-Za-z0-9_-]+/?\$")
-
-        private val stringRegex = Regex("^\"(.*)\"\$")
-        private val pairRegex = Regex("^([A-Za-z]+):[ \t]*(.+)\$")
         private val studentStringRegex = Regex("^Student\\((.+)\\)$")
+        private val pairRegex = Regex("^([A-Za-z]+):[ \t]*(.+)\$")
+        private val stringRegex = Regex("^\"(.*)\"\$")
 
-        fun fromString(s: String): Student {
-            val studentR = studentStringRegex.matchEntire(s) ?: throw Exception("Неправильный формат строки Student")
-            val params = studentR.groupValues[1].split(";")
-            val map = mutableMapOf<String, String?>()
-            for (param in params) {
-                val pair = deserializePair(param)
-                map[pair.first] = pair.second
-            }
-
-            return Student(map)
+        private fun serializeString(s: String?): String {
+            return if (s == null) "null" else "\"$s\""
         }
 
         private fun deserializeString(s: String): String? {
@@ -34,32 +22,37 @@ class Student {
             return pr.groupValues[1] to deserializeString(pr.groupValues[2])
         }
 
-        private fun validateName(name: String) {
-            if (!nameRegex.matches(name)) throw Exception("Неправильное имя")
+        fun fromString(s: String): Student {
+            val studentR = studentStringRegex.matchEntire(s) ?: throw Exception("Неправильный формат строки Student")
+            val params = studentR.groupValues[1].split(";")
+            val map = mutableMapOf<String, String?>()
+            for (param in params) {
+                val pair = deserializePair(param)
+                map[pair.first] = pair.second
+            }
+
+            return Student(map)
         }
 
-        private fun validatePatronymic(name: String?) {
-            if (name != null && !nameRegex.matches(name)) throw Exception("Неправильное отчество")
+        fun fromTextFile(path: String): Collection<Student> {
+            val file = File(path)
+            if (!file.canRead()) throw Exception("Файл по пути $path не существует")
+
+            val students = mutableListOf<Student>()
+            for (line in file.readLines()) {
+                students.add(fromString(line))
+            }
+
+            return students
         }
 
-        private fun validatePhone(phone: String?) {
-            if (phone != null && !phoneRegex.matches(phone)) throw Exception("Неправильный номер телефона")
-        }
-
-        private fun validateTelegram(telegram: String?) {
-            if (telegram != null && !telegramRegex.matches(telegram)) throw Exception("Неправильный URL Telegram")
-        }
-
-        private fun validateEmail(email: String?) {
-            if (email != null && !emailRegex.matches(email)) throw Exception("Неправильный адрес Email")
-        }
-
-        private fun validateGitHub(github: String?) {
-            if (github != null && !githubRegex.matches(github)) throw Exception("Неправильный адрес GitHub")
-        }
-
-        private fun serializeString(s: String?): String {
-            return if (s == null) "null" else "\"$s\""
+        fun toTextFile(path: String, students: Iterable<Student>) {
+            val file = File(path)
+            file.printWriter().use { pw ->
+                for (student in students) {
+                    pw.println(student.toString())
+                }
+            }
         }
     }
 
@@ -69,9 +62,12 @@ class Student {
     private var _phone: String? = null
     private var _telegram: String? = null
     private var _email: String? = null
-    private var _github: String? = null
 
     var id: Int
+        get() = _id
+        set(value) {
+            _id = value
+        }
     var lastName: String
         get() = _lastName
         set(value) {
@@ -167,9 +163,9 @@ class Student {
 
         if (github != null) s += ", Гит: ${github!!}"
 
-        if (phone != null) s += ", Телефон: ${phone!!}"
-        if (telegram != null) s += ", Телеграм: ${telegram!!}"
-        if (email != null) s += ", Электронная почта: ${email!!}"
+        if (phone != null) s += ", Контакт: Телефон ${phone!!}"
+        else if (telegram != null) s += ", Контакт: Телеграм ${telegram!!}"
+        else if (email != null) s += ", Контакт: Электронная почта ${email!!}"
 
         return s
     }
@@ -184,4 +180,10 @@ class Student {
                 phone
             )
         };telegram:${serializeString(telegram)};email:${serializeString(email)};github:${serializeString(github)})"
+
+    override fun equals(other: Any?): Boolean {
+        val otherStudent = other as? Student ?: return false
+
+        return id == otherStudent.id && lastName == otherStudent.lastName && firstName == otherStudent.firstName && patronymic == otherStudent.patronymic && phone == otherStudent.phone && telegram == otherStudent.telegram && email == otherStudent.email && github == otherStudent.github
+    }
 }

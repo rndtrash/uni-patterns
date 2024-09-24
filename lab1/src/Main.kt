@@ -1,3 +1,23 @@
+fun checkEquality(student1: Student, student2: Student, student3: Student) {
+    val studentsOut = listOf(student2, student1, student3)
+    Student.toTextFile("students1.txt", studentsOut)
+    val studentsIn = Student.fromTextFile("students1.txt")
+
+    if (studentsOut.size != studentsIn.size) println("Функции toTextFile и fromTextFile не совместимы")
+
+    var i = 0
+    while (i < studentsOut.size) {
+        if (studentsOut[i] != studentsIn.elementAt(i)) {
+            println("Функции toTextFile и fromTextFile не совместимы")
+            return
+        }
+
+        i++
+    }
+
+    println("Функции toTextFile и fromTextFile совместимы")
+}
+
 fun main() {
     // Создаем объект из Map
     val student1 = Student(
@@ -39,4 +59,11 @@ fun main() {
     student1.displayInfo()
     student2.displayInfo()
     student3.displayInfo()
+
+    val students = Student.fromTextFile("students.txt")
+    for (student in students) {
+        println(student.getInfo())
+    }
+
+    checkEquality(student1, student2, student3)
 }
