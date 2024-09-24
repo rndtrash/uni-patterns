@@ -27,7 +27,7 @@ fun main() {
         )
     )
     println(student2)
-    student2.getInfo()
+    println(student2.getInfo())
 
     val student3 = Student(
         mapOf(

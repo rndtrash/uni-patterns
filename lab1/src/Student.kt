@@ -161,7 +161,7 @@ class Student {
         )
     }
 
-    fun getInfo() {
+    fun getInfo(): String {
         var s = "$lastName ${firstName[0]}."
         if (patronymic != null) s += " ${patronymic!![0]}."
 
@@ -171,7 +171,7 @@ class Student {
         if (telegram != null) s += ", Телеграм: ${telegram!!}"
         if (email != null) s += ", Электронная почта: ${email!!}"
 
-        println(s)
+        return s
     }
 
     override fun toString(): String =
