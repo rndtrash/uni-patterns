@@ -1,12 +1,11 @@
 @startuml
-class Person {
+class Student {
   - _lastName : String
   - _firstName : String
   - _patronymic : String?
   - _phone : String?
   - _telegram : String?
   - _email : String?
-  - _github : String?
   + id : Int
   + lastName : String
   + firstName : String
@@ -16,5 +15,24 @@ class Person {
   + email : String?
   + github : String?
   + displayInfo() : Unit
+  + toString() : String
+  + equals(other: Any?) : Bool
 }
+
+class Student_short {
+  - _initials : String
+  - _contact : String?
+  + id : Int
+  + initials : String
+  + contact : String?
+  + github : String?
+}
+
+abstract class BaseStudent {
+  # _id : Int
+  # _github : String?
+}
+
+BaseStudent <|-- Student
+BaseStudent <|-- Student_short
 @enduml
