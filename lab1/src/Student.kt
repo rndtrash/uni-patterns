@@ -161,6 +161,19 @@ class Student {
         )
     }
 
+    fun getInfo() {
+        var s = "$lastName ${firstName[0]}."
+        if (patronymic != null) s += " ${patronymic!![0]}."
+
+        if (github != null) s += ", Гит: ${github!!}"
+
+        if (phone != null) s += ", Телефон: ${phone!!}"
+        if (telegram != null) s += ", Телеграм: ${telegram!!}"
+        if (email != null) s += ", Электронная почта: ${email!!}"
+
+        println(s)
+    }
+
     override fun toString(): String =
         "Student(id:\"$id\";lastName:${serializeString(lastName)};firstName:${serializeString(firstName)};patronymic:${
             serializeString(
