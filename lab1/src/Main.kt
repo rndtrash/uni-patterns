@@ -66,4 +66,14 @@ fun main() {
     }
 
     checkEquality(student1, student2, student3)
+
+    val shortStudentList = listOf(student1, student2, student3).map { student -> StudentShort(student) }
+    val dataList = DataListStudentShort(shortStudentList)
+    println(dataList.toString())
+    dataList.select(0)
+    dataList.select(1)
+    val dataTable: DataTable<String> = dataList.getData()
+    val dataListNames = dataList.getNames()
+    dataList.printNames(dataListNames)
+    dataTable.displayTable()
 }

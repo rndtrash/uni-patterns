@@ -1,4 +1,4 @@
-class Student_short : BaseStudent {
+class StudentShort : BaseStudent, Comparable<StudentShort> {
     companion object {
         private val initialsRegex = Regex("^[А-Яа-яЁёA-Za-z-]+ [А-ЯЁA-Z]\\.( [А-ЯЁA-Z]\\.)?$")
 
@@ -54,4 +54,8 @@ class Student_short : BaseStudent {
     }
 
     constructor(student: Student) : this(student.id, student.getInfo())
+
+    override fun compareTo(other: StudentShort): Int {
+        return if (initials == other.initials && github == other.github && contact == other.contact) 0 else -1
+    }
 }
